@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المنصة الوطنية للوكلاء الأذكياء — العرض الاستثماري (Pitch Deck)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #006C35;
+      --primary-dark: #004D25;
+      --accent: #0A8244;
+      --gold: #D4AF37;
+      --bg: #F4FAF6;
+      --card-bg: #FFFFFF;
+      --card-border: #D4E8DC;
+      --text-dark: #042210;
+      --text-muted: #4D7A60;
+      --shadow: 0 4px 20px rgba(0, 76, 38, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .toolbar {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar-title {
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-print {
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      transition: opacity 150ms;
+    }
+
+    .btn-print:hover {
+      opacity: 0.9;
+    }
+
+    .deck-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .slide {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 40px;
+      min-height: 580px;
+      position: relative;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      overflow: hidden;
+    }
+
+    .slide.cover {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: #fff;
+      border: none;
+      text-align: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      align-self: center;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .cover-title {
+      font-size: 38px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .cover-subtitle {
+      font-size: 18px;
+      color: #C5E0CF;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .cover-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .slide-category {
+      display: inline-block;
+      background: #EAF5EE;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .grid-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      flex: 1;
+    }
+
+    .card-box {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      border-top: 4px solid var(--primary);
+    }
+
+    .card-box.red-accent {
+      border-top-color: #DC2626;
+    }
+
+    .card-box.highlight {
+      background: #EAF5EE;
+      border-color: var(--primary);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .card-box.red-accent .card-title {
+      color: #DC2626;
+    }
+
+    .card-text {
+      font-size: 13px;
+      color: var(--text-dark);
+      line-height: 1.7;
+    }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 12.5px;
+    }
+
+    .table-custom th, .table-custom td {
+      border: 1px solid var(--card-border);
+      padding: 12px 14px;
+      text-align: right;
+    }
+
+    .table-custom th {
+      background: var(--primary-dark);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .table-custom td.highlight-col {
+      background: #EAF5EE;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+      .toolbar {
+        display: none;
+      }
+      .deck-container {
+        gap: 0;
+      }
+      .slide {
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        height: 100vh;
+        min-height: 100vh;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <div class="toolbar-title">
+      <span>🇸🇦 المنصة الوطنية للوكلاء الأذكياء — العرض الاستثماري (Pitch Deck)</span>
+    </div>
+    <button class="btn-print" onclick="window.print()">🖨️ طباعة / حفظ كـ PDF</button>
+  </div>
+
+  <div class="deck-container">
+
+    <!-- SLIDE 1 -->
+    <div class="slide cover">
+      <div class="cover-badge">🇸🇦 رؤية 2030 · التحول الرقمي والذكاء الاصطناعي السيادي</div>
+      <div class="cover-title">المنصة الوطنية للوكلاء الأذكياء</div>
+      <div class="cover-subtitle">تحويل بوابات الوزارات، الجامعات، والشركات الكبرى إلى تجارب تفاعلية ذكية وفورية</div>
+      <div class="cover-grid">
+        <div class="cover-card">🏛️ الوزارات والجهات الحكومية</div>
+        <div class="cover-card">🎓 الجامعات والمراكز الأكاديمية</div>
+        <div class="cover-card">🏢 الشركات والقطاع المالي</div>
+        <div class="cover-card">🛍️ المتاجر والقطاع التجاري</div>
+      </div>
+      <div style="font-size: 12px; color: #8FBFA3; margin-top: 16px;">عرض استثماري سري · الرياض، المملكة العربية السعودية · 2026</div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">التحدي في السوق السعودي</div>
+        <div class="slide-title">المشكلة: فجوة التفاعل والوصول للمعلومة في المنصات الرقمية</div>
+      </div>
+      <div class="grid-2x2">
+        <div class="card-box red-accent">
+          <div class="card-title">🏛️ تشتت المستفيد بين مئات اللوائح والصفحات</div>
+          <div class="card-text">المواطن والباحث والعميل يضيعون في البوابات الحكومية والجامعية بين مئات الروابط والـ PDFs والأنظمة المعقدة دون وصول مباشر للخدمة.</div>
+        </div>
+        <div class="card-box red-accent">
+          <div class="card-title">📞 تكلفة تشغيلية هائلة لمراكز الاتصال</div>
+          <div class="card-text">الوزارات والجامعات والشركات تنفق مئات الملايين سنوياً على مراكز دعم تعاني من ضغط وتأخر طويل في الرد خلال أوقات الذروة.</div>
+        </div>
+        <div class="card-box red-accent">
+          <div class="card-title">🤖 فشل وغباء الشات بوت التقليدي (Rule-Based)</div>
+          <div class="card-text">البوتات القديمة شجرية جامدة، تفشل في فهم صياغة المستفيد السعودي واللهجات المحلية وتفتقر للفهم التنظيمي الشامل.</div>
+        </div>
+        <div class="card-box red-accent">
+          <div class="card-title">🔒 تحديات السيادة البيانية والامتثال</div>
+          <div class="card-text">الحلول الأجنبية غير متوافقة مع نظام حماية البيانات الشخصية السعودي (PDPL) ولا تتيح استبعاد أو حظر البيانات الحساسة بسهولة.</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>2 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">القيمة المضافة والابتكار</div>
+        <div class="slide-title">الحل: وكيل ذكاء اصطناعي سيادي وفائق التخصيص لكل جهة</div>
+      </div>
+      <div class="grid-4">
+        <div class="card-box">
+          <div style="font-size: 28px; margin-bottom: 8px;">⚡</div>
+          <div class="card-title">تعلّم فوري شامل</div>
+          <div class="card-text">قراءة وفهرسة البوابة الرقمية، اللوائح، الأنظمة التنفيذية، وأدلة القبول تلقائياً في دقائق بـ سطر كود واحد.</div>
+        </div>
+        <div class="card-box">
+          <div style="font-size: 28px; margin-bottom: 8px;">🇸🇦</div>
+          <div class="card-title">فهم محلي عميق</div>
+          <div class="card-text">محادثة طبيعية تفهم المصطلحات الرسمية الحكومية، الأنظمة الأكاديمية، واللهجة السعودية بذكاء متقن.</div>
+        </div>
+        <div class="card-box">
+          <div style="font-size: 28px; margin-bottom: 8px;">👁️</div>
+          <div class="card-title">إدراك الشاشة الحية</div>
+          <div class="card-text">المساعد يرى ويفهم الصفحة والنموذج الذي يقف عليه المستخدم حالياً ويقوده خطوة بخطوة لإتمام الإجراء.</div>
+        </div>
+        <div class="card-box">
+          <div style="font-size: 28px; margin-bottom: 8px;">🛡️</div>
+          <div class="card-title">تحكم سيادي بالمعرفة</div>
+          <div class="card-text">إمكانية استبعاد أو إخفاء أي محتوى حساس بنقرة زر، مع امتثال كامل للسيادة البيانية ونظام PDPL.</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>3 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">القطاعات والجهات المستهدفة</div>
+        <div class="slide-title">تطبيقات المنصة عبر مختلف القطاعات الوطنية في المملكة</div>
+      </div>
+      <div class="grid-2x2">
+        <div class="card-box">
+          <div class="card-title">🏛️ الوزارات والجهات الحكومية (GovTech)</div>
+          <div class="card-text">
+            • شرح شروط التراخيص، الأنظمة، واللوائح التنفيذية فوراً للمواطن والمستثمر.<br />
+            • توجيه المستفيد لصفحة الخدمة المناسبة (أبشر، قوى، بلدي، ناجز، الزكاة).<br />
+            • تخفيف الضغط على مراكز الاتصال بنسبة تتجاوز 75%.
+          </div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🎓 الجامعات والمراكز الأكاديمية (EdTech)</div>
+          <div class="card-text">
+            • إرشاد آلاف الطلاب حول نسب القبول، المسارات، والخطط الدراسية.<br />
+            • شرح لوائح الابتعاث، المنح، شروط التخرج، والخدمات الطلابية 24/7.<br />
+            • توفير دليل ذكي تفاعلي للطلاب الجدد والمبتعثين.
+          </div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🏢 الشركات الكبرى والبنوك (Enterprise & FinTech)</div>
+          <div class="card-text">
+            • مقارنة برامج التمويل، بطاقات الائتمان، وحساب الأقساط والقروض.<br />
+            • شرح وثائق التأمين والاشتراطات وحلول الشركات المؤسسية.<br />
+            • تأهيل العملاء المحتملين وتوجيه طلبات الشراء تلقائياً.
+          </div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🏝️ المشروعات الكبرى والسياحة (Tourism)</div>
+          <div class="card-text">
+            • إرشاد زوار نيوم، البحر الأحمر، العلا، والدرعية بعدة لغات عالمية.<br />
+            • شرح تفاصيل الفعاليات، التذاكر، الحجوزات، والمواقع السياحية.<br />
+            • تجربة رقمية ثرية تعكس الثقافة والتراث السعودي الأصيل.
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>4 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">الهندسة التقنية المتقدمة</div>
+        <div class="slide-title">البنية التقنية: محرك RAG فائق الدقة وبوابة نماذج سيادية</div>
+      </div>
+      <div class="grid-4">
+        <div class="card-box">
+          <div class="card-title">1. الزحف واستيعاب المعرفة</div>
+          <div class="card-text">محرك زحف متصفحي متقدم يقرأ البوابات المعقدة وتطبيقات SPA وملفات PDF وقواعد البيانات آلياً.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">2. التجزئة وتصفية الخصوصية</div>
+          <div class="card-text">تقطيع المعرفة إلى مقاطع دلالية (Semantic Chunks) مع تحكم كامل في استبعاد أي بيانات حساسة.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">3. الاسترجاع الهجين المتطابق</div>
+          <div class="card-text">مطابقة استفسار المستفيد مع أدق المقاطع في أجزاء من الثانية لمنع الهلوسة وضمان دقة 100%.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">4. التوجيه والتفاعل اللحظي</div>
+          <div class="card-text">صياغة إجابة عربية احترافية مدعومة بأزرار توجيه فوري وروابط مباشرة لإتمام المعاملة.</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>5 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">الميزة التنافسية الحصرية</div>
+        <div class="slide-title">المقارنة التنافسية: لماذا نتفوق على كافة البدائل في السوق؟</div>
+      </div>
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th>معايير المقارنة</th>
+            <th style="background: var(--primary);">منصتنا الوطنية الذكية 🇸🇦</th>
+            <th>الشات بوت التقليدي</th>
+            <th>الحلول العالمية (Intercom / Zendesk)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>سرعة الإعداد والتشغيل</strong></td>
+            <td class="highlight-col">دقائق معدودة (سطر برمجي واحد)</td>
+            <td>أسابيع من البرمجة وتصميم الأشجار</td>
+            <td>إعدادات معقدة تتطلب تدريباً مستمراً</td>
+          </tr>
+          <tr>
+            <td><strong>فهم الأنظمة والسياق السعودي</strong></td>
+            <td class="highlight-col">فهم محلي فائق للهجات والأنظمة</td>
+            <td>لا يفهم (قائم على كلمات مفتاحية جامدة)</td>
+            <td>ترجمة آلية ركيكة تفتقر لفهم الأنظمة</td>
+          </tr>
+          <tr>
+            <td><strong>قراءة الشاشة الحية (Live Context)</strong></td>
+            <td class="highlight-col">مدعوم لحظياً من متصفح الزائر</td>
+            <td>غير مدعوم نهائياً</td>
+            <td>غير مدعوم في معظم السيناريوهات</td>
+          </tr>
+          <tr>
+            <td><strong>السيادة والامتثال لنظام PDPL</strong></td>
+            <td class="highlight-col">امتثال كامل مع خيارات استضافة محلية</td>
+            <td>تخزين مشتت وضعيف الحماية</td>
+            <td>بيانات مخزنة في خوادم خارجية</td>
+          </tr>
+          <tr>
+            <td><strong>التحكم في حظر وإخفاء المعرفة</strong></td>
+            <td class="highlight-col">تحكم فوري بنقرة زر لكل صفحة/ملف</td>
+            <td>غير متوفر</td>
+            <td>إجراءات تصفية معقدة وبطيئة</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>6 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">حجم السوق والتوسع الاستراتيجي</div>
+        <div class="slide-title">فرصة السوق الضخمة ومواءمة رؤية السعودية 2030</div>
+      </div>
+      <div class="grid-4" style="margin-bottom: 20px;">
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 26px; font-weight: 900; color: var(--primary);">+130 مليار</div>
+          <div class="card-text">حجم سوق الـ IT والذكاء الاصطناعي في المملكة (الأكبر إقليمياً)</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 26px; font-weight: 900; color: var(--primary);">+100,000</div>
+          <div class="card-text">جهة حكومية، جامعة، مؤسسة كبرى، ومتجر مؤهل للتكامل الفوري</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 26px; font-weight: 900; color: var(--primary);">رؤية 2030</div>
+          <div class="card-text">مستهدفات قياس نضج التجربة الرقمية والتحول نحو الخدمات الذكية</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 26px; font-weight: 900; color: var(--primary);">+60%</div>
+          <div class="card-text">توفير متوقع في تكاليف الدعم مع رفع رضا المستفيدين لأكثر من 92%</div>
+        </div>
+      </div>
+      <div class="card-box highlight">
+        <div class="card-title">🎯 التوافق الاستراتيجي مع مستهدفات المملكة:</div>
+        <div class="card-text">
+          • رفع تصنيف المملكة في مؤشر الأمم المتحدة لتطور الحكومة الإلكترونية (EGDI).<br />
+          • تمكين الجامعات من توفير بيئة ذكية تفاعلية للطلاب والباحثين بما يعزز جودة التعليم الأكاديمي.<br />
+          • تعزيز نمو قطاع الأعمال والتجارة الإلكترونية ورفع كفاءة الخدمات الوطنية.
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>7 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">نموذج الأعمال B2G / B2B SaaS</div>
+        <div class="slide-title">نموذج العمل والإيرادات: اشتراكات سحابية وعقود مؤسسية</div>
+      </div>
+      <div class="grid-3">
+        <div class="card-box highlight">
+          <div class="card-title">🏛️ الجهات الحكومية والجامعات</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">B2G Enterprise Annual Licenses</div>
+          <div style="font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 12px;">عقود سنوية مخصصة (SLA)</div>
+          <div class="card-text">
+            ✓ استضافة سحابية سيادية أو On-Premise<br />
+            ✓ تغذية من آلاف اللوائح والوثائق الرسمية<br />
+            ✓ تكامل كامل مع قواعد البيانات الداخلية<br />
+            ✓ دعم فني مخصص ومعايير أمن سيبراني صارمة
+          </div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🏢 الشركات الكبرى والبنوك</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Enterprise B2B</div>
+          <div style="font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 12px;">3,500 إلى 15,000+ ر.س / شهرياً</div>
+          <div class="card-text">
+            ✓ زحف بوابات متعددة وكتالوجات ضخمة<br />
+            ✓ ربط مباشر مع قواعد البيانات والأسعار<br />
+            ✓ تحليلات رضا المستفيدين ونسب التحويل<br />
+            ✓ تخصيص كامل للهوية والنبرة الصوتية
+          </div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🛍️ المتاجر والشركات المتوسطة</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">SME SaaS Subscriptions</div>
+          <div style="font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 12px;">199 إلى 999 ر.س / شهرياً</div>
+          <div class="card-text">
+            ✓ تثبيت بنقرة واحدة لمتاجر سلة وزد وشوبيفاي<br />
+            ✓ زحف المتجر وقراءة المنتجات والتقسيط<br />
+            ✓ محادثات ذكية غير محدودة لزيادة المبيعات<br />
+            ✓ لوحة تحكم وتحليلات فورية ومختبر RAG
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>8 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">خطة التوسع والشراكات</div>
+        <div class="slide-title">استراتيجية الوصول للسوق والانتشار الوطني</div>
+      </div>
+      <div class="grid-2x2">
+        <div class="card-box">
+          <div class="card-title">🤝 الشراكات الحكومية ومنظومة التحول</div>
+          <div class="card-text">بناء شراكات مباشرة مع هيئة الحكومة الرقمية (DGA)، سدايا (SDAIA)، والمراكز الرقمية الوطنية لاعتماد المنصة كمعيار تفاعلي وطني.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🎓 التكامل مع الجامعات والمراكز الأكاديمية</div>
+          <div class="card-text">مبادرات تجريبية مع كبرى الجامعات (جامعة الملك سعود، البترول والمعادن) لأتمتة الاستفسارات الأكاديمية والقبول والتسجيل.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🔌 متجر تطبيقات منصات التجارة (سلة وزد)</div>
+          <div class="card-text">تطبيق مباشر يتيح لـ 50,000+ تاجر سعودي تفعيل المساعد في متجرهم بضغطة زر واحدة مع فترة تجربة مجانية.</div>
+        </div>
+        <div class="card-box">
+          <div class="card-title">🌐 التوسع نحو كبرى شركات تكامل الأنظمة</div>
+          <div class="card-text">التعاون مع شركات التقنية الرائدة في المملكة (System Integrators) لدمج المنصة ضمن مشروعات التحول الرقمي الكبرى والمشروعات العملاقة.</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>9 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">المؤشرات المالية (Financial Plan)</div>
+        <div class="slide-title">التوقعات المالية وخطة النمو والتوسع لـ 3 سنوات</div>
+      </div>
+      <div class="grid-3">
+        <div class="card-box" style="text-align: center;">
+          <div class="card-title" style="font-size: 16px;">السنة الأولى (Year 1)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">الترسيخ والانطلاق الوطني</div>
+          <div style="background: var(--primary); color: #fff; padding: 12px; border-radius: 8px; font-weight: 900; font-size: 18px; margin-bottom: 14px;">
+            4.5 مليون ر.س<br /><span style="font-size: 11px; font-weight: 500;">الإيراد السنوي المتكرر (ARR)</span>
+          </div>
+          <div class="card-text" style="text-align: right;">
+            • 20+ جهة حكومية وجامعة<br />
+            • 500+ متجر وشركة كبرى<br />
+            • 10 مليون استفسار معالج
+          </div>
+        </div>
+        <div class="card-box highlight" style="text-align: center;">
+          <div class="card-title" style="font-size: 16px;">السنة الثانية (Year 2)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">التوسع والريادة في السوق</div>
+          <div style="background: var(--primary); color: #fff; padding: 12px; border-radius: 8px; font-weight: 900; font-size: 18px; margin-bottom: 14px;">
+            14.8 مليون ر.س<br /><span style="font-size: 11px; font-weight: 500;">الإيراد السنوي المتكرر (ARR)</span>
+          </div>
+          <div class="card-text" style="text-align: right;">
+            • 60+ جهة حكومية وجامعة<br />
+            • 2,000+ متجر وشركة<br />
+            • إطلاق المساعد الصوتي (Voice)
+          </div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div class="card-title" style="font-size: 16px;">السنة الثالثة (Year 3)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">التوسع الخليجي والإقليمي</div>
+          <div style="background: var(--primary); color: #fff; padding: 12px; border-radius: 8px; font-weight: 900; font-size: 18px; margin-bottom: 14px;">
+            38.0 مليون ر.س<br /><span style="font-size: 11px; font-weight: 500;">الإيراد السنوي المتكرر (ARR)</span>
+          </div>
+          <div class="card-text" style="text-align: right;">
+            • 150+ جهة ومؤسسة إقليمية<br />
+            • 6,000+ عميل تجاري<br />
+            • الربحية التامة والريادة الإقليمية
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>10 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div class="slide-category">الاستثمار وتوزيع رأس المال</div>
+        <div class="slide-title">الطلب الاستثماري: جولة استثمارية (Seed Round)</div>
+      </div>
+      <div class="card-box" style="background: var(--primary-dark); color: #fff; text-align: center; margin-bottom: 20px; border: none;">
+        <div style="font-size: 22px; font-weight: 900; color: var(--gold); margin-bottom: 4px;">المبلغ المستهدف: 5,000,000 ريال سعودي</div>
+        <div style="font-size: 13px; color: #C5E0CF;">لتسريع التوسع الحكومي والمؤسسي وتطوير النماذج الصوتية والسيادية</div>
+      </div>
+      <div class="grid-4">
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--primary);">40%</div>
+          <div class="card-title">المبيعات والشراكات</div>
+          <div class="card-text">بناء فريق مبيعات حكومي ومؤسسي والتكامل مع منظومات التحول الرقمي وسلة وزد.</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--primary);">35%</div>
+          <div class="card-title">البحث وتطوير الـ AI</div>
+          <div class="card-text">تدريب نماذج سيادية وتطوير الوكلاء الصوتيين التفاعليين (Voice Agents).</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--primary);">15%</div>
+          <div class="card-title">البنية التحتية والسيادة</div>
+          <div class="card-text">خوادم سحابية سيادية محلية وشهادات الأمن السيبراني والامتثال لـ PDPL.</div>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--primary);">10%</div>
+          <div class="card-title">العمليات والامتثال</div>
+          <div class="card-text">التراخيص، الملكية الفكرية، واعتمادات التوافق الحكومي والقانوني.</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <div>عرض استثماري سري — المنصة الوطنية للوكلاء الأذكياء</div>
+        <div>11 / 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide cover">
+      <div class="cover-badge">🇸🇦 دعوة للاستثمار والشراكة الاستراتيجية</div>
+      <div class="cover-title" style="font-size: 30px;">«نبني العقل الرقمي الذكي لكل بوابة، جامعة، ومؤسسة في المملكة»</div>
+      <div class="cover-subtitle">انضموا إلينا في قيادة الجيل القادم من التفاعل الرقمي والذكاء الاصطناعي في المملكة العربية السعودية</div>
+      <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--gold); padding: 24px; border-radius: 16px; max-width: 600px; margin: 0 auto; text-align: right; line-height: 2;">
+        <div style="font-weight: 800; color: var(--gold); margin-bottom: 6px; font-size: 15px;">للتواصل ومناقشة الفرصة الاستثمارية:</div>
+        <div>📧 البريد الإلكتروني: <strong>contact@ai-platform.sa</strong></div>
+        <div>📱 الجوال: <strong>+966 5X XXX XXXX</strong></div>
+        <div>🌐 النسخة الحية للتجربة (Live Demo): <strong>http://localhost:5173</strong></div>
+        <div>📍 الرياض، المملكة العربية السعودية</div>
+      </div>
+      <div style="font-size: 12px; color: #8FBFA3; margin-top: 10px;">نهاية العرض التقديمي · شكراً لكم</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

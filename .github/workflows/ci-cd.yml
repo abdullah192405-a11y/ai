@@ -1,0 +1,190 @@
+# ═══════════════════════════════════════════════════════════
+# WBA Platform — CI/CD Pipeline
+# ═══════════════════════════════════════════════════════════
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+
+  # ─── Lint & Test (Node.js Services) ─────────────────────
+  test-node:
+    name: Test Node.js Services
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth-service
+          - tenant-service
+          - billing-service
+          - analytics-service
+          - action-execution
+          - admin-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: services/${{ matrix.service }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: services/${{ matrix.service }}
+
+      - name: Lint
+        run: npm run lint
+        working-directory: services/${{ matrix.service }}
+
+      - name: Run tests
+        run: npm test
+        working-directory: services/${{ matrix.service }}
+
+  # ─── Lint & Test (Python Services) ──────────────────────
+  test-python:
+    name: Test Python Services
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - ai-orchestration
+          - knowledge-base
+          - llm-gateway
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv pip install --system ".[dev]"
+        working-directory: services/${{ matrix.service }}
+
+      - name: Lint
+        run: ruff check src/
+        working-directory: services/${{ matrix.service }}
+
+      - name: Type check
+        run: mypy src/
+        working-directory: services/${{ matrix.service }}
+
+      - name: Run tests
+        run: pytest --cov=src --cov-report=xml
+        working-directory: services/${{ matrix.service }}
+
+  # ─── Security Scan ─────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+
+  # ─── Build & Push Docker Images ─────────────────────────
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [test-node, test-python, security]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    strategy:
+      matrix:
+        service:
+          - auth-service
+          - tenant-service
+          - billing-service
+          - ai-orchestration
+          - knowledge-base
+          - llm-gateway
+          - analytics-service
+          - action-execution
+          - admin-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: services/${{ matrix.service }}
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/wba-${{ matrix.service }}:${{ github.sha }}
+            ${{ env.ECR_REGISTRY }}/wba-${{ matrix.service }}:latest
+
+  # ─── Deploy to Staging ──────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update K8s manifests
+        run: |
+          for service in auth-service tenant-service billing-service ai-orchestration knowledge-base llm-gateway analytics-service action-execution admin-service; do
+            sed -i "s|image:.*wba-${service}:.*|image: ${ECR_REGISTRY}/wba-${service}:${GITHUB_SHA}|" \
+              infrastructure/kubernetes/services/${service}/deployment.yaml
+          done
+
+      - name: Commit and push to trigger ArgoCD
+        run: |
+          git config user.name "CI/CD Bot"
+          git config user.email "ci@wba-platform.com"
+          git add infrastructure/kubernetes/
+          git commit -m "deploy: update images to ${GITHUB_SHA}"
+          git push
+
+  # ─── Deploy to Production ──────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update K8s manifests
+        run: |
+          for service in auth-service tenant-service billing-service ai-orchestration knowledge-base llm-gateway analytics-service action-execution admin-service; do
+            sed -i "s|image:.*wba-${service}:.*|image: ${ECR_REGISTRY}/wba-${service}:${GITHUB_SHA}|" \
+              infrastructure/kubernetes/services/${service}/deployment.yaml
+          done
+
+      - name: Commit and push to trigger ArgoCD
+        run: |
+          git config user.name "CI/CD Bot"
+          git config user.email "ci@wba-platform.com"
+          git add infrastructure/kubernetes/
+          git commit -m "deploy(prod): update images to ${GITHUB_SHA}"
+          git push

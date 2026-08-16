@@ -1,0 +1,36 @@
+{
+    "name": "@wba/tenant-service",
+    "version": "1.0.0",
+    "description": "Tenant Management Service — Website registration, domain verification, config",
+    "main": "src/index.js",
+    "scripts": {
+        "dev": "nodemon src/index.js",
+        "start": "node src/index.js",
+        "test": "jest --coverage",
+        "test:unit": "jest --testPathPattern=tests/unit",
+        "test:integration": "jest --testPathPattern=tests/integration",
+        "lint": "eslint src/",
+        "migrate": "knex migrate:latest",
+        "migrate:rollback": "knex migrate:rollback"
+    },
+    "dependencies": {
+        "fastify": "^5.x",
+        "@fastify/cors": "^10.x",
+        "@fastify/helmet": "^13.x",
+        "knex": "^3.x",
+        "pg": "^8.x",
+        "ioredis": "^5.x",
+        "uuid": "^11.x",
+        "pino": "^9.x",
+        "dotenv": "^16.x",
+        "zod": "^3.x",
+        "dns2": "^2.x",
+        "jsonwebtoken": "^9.x"
+    },
+    "devDependencies": {
+        "nodemon": "^3.x",
+        "jest": "^29.x",
+        "eslint": "^9.x",
+        "supertest": "^7.x"
+    }
+}

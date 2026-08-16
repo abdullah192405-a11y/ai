@@ -1,0 +1,18 @@
+# ──────────────────────────────────────────────────────
+# WBA Platform — Local Development Docker Compose
+# ──────────────────────────────────────────────────────
+# Usage:
+#   docker compose up -d                        # Infrastructure only
+#   docker compose --profile services up -d   # Infrastructure + microservices
+#   docker compose down                         # Stop all
+#
+# Layout:
+#   apps/          — Frontends (admin, user, website, widget)
+#   services/      — Backends (platform-api MVP + microservices)
+#   packages/      — Shared libraries
+#   infrastructure/docker/ — Compose definitions
+# ──────────────────────────────────────────────────────
+
+include:
+  - path: infrastructure/docker/infrastructure.yml
+  - path: infrastructure/docker/services.yml

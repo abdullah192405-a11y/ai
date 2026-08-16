@@ -1,0 +1,20 @@
+{
+  "name": "@wba/dashboard-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./ChartTip": "./src/ChartTip.jsx",
+    "./LoginForm": "./src/LoginForm.jsx",
+    "./authHandoff": "./src/authHandoff.js",
+    "./createApiClient": "./src/createApiClient.js",
+    "./createMarketingClient": "./src/createMarketingClient.js",
+    "./embedIntegrations": "./src/embedIntegrations.js",
+    "./formatDate": "./src/formatDate.js",
+    "./styles/base.css": "./styles/base.css",
+    "./vite.config.shared": "./vite.config.shared.js"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

@@ -1,0 +1,119 @@
+# ──────────────────────────────────────────────────────
+# WBA Platform — Microservices (future architecture)
+# ──────────────────────────────────────────────────────
+# Scaffolded services live under services/_future/
+# MVP uses platform-api only. Enable with: docker compose --profile services up -d
+# ──────────────────────────────────────────────────────
+
+services:
+
+  auth-service:
+    build:
+      context: ../..
+      dockerfile: services/_future/auth-service/Dockerfile
+    container_name: wba-auth
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file: ../../services/_future/auth-service/.env.example
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  tenant-service:
+    build:
+      context: ../..
+      dockerfile: services/_future/tenant-service/Dockerfile
+    container_name: wba-tenant
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  billing-service:
+    build:
+      context: ../..
+      dockerfile: services/_future/billing-service/Dockerfile
+    container_name: wba-billing
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ai-orchestration:
+    build: ../../services/_future/ai-orchestration
+    container_name: wba-ai-orchestration
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      ENVIRONMENT: development
+      REDIS_URL: redis://redis:6379
+      KNOWLEDGE_BASE_URL: http://knowledge-base:8002
+      LLM_GATEWAY_URL: http://llm-gateway:8003
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  knowledge-base:
+    build: ../../services/_future/knowledge-base
+    container_name: wba-knowledge-base
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      ENVIRONMENT: development
+      DB_HOST: postgres
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      S3_ENDPOINT: http://localstack:4566
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+
+  llm-gateway:
+    build: ../../services/_future/llm-gateway
+    container_name: wba-llm-gateway
+    profiles: [ "services" ]
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    environment:
+      ENVIRONMENT: development
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy

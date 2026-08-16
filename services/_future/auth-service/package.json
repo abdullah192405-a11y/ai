@@ -1,0 +1,39 @@
+{
+  "name": "@wba/auth-service",
+  "version": "1.0.0",
+  "description": "Authentication & Authorization Service — JWT, API Keys, OAuth2, RBAC",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "test": "jest --coverage",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "lint": "eslint src/",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "seed": "knex seed:run"
+  },
+  "dependencies": {
+    "fastify": "^5.x",
+    "@fastify/cors": "^10.x",
+    "@fastify/helmet": "^13.x",
+    "@fastify/rate-limit": "^10.x",
+    "@fastify/jwt": "^9.x",
+    "knex": "^3.x",
+    "pg": "^8.x",
+    "ioredis": "^5.x",
+    "bcrypt": "^5.x",
+    "uuid": "^11.x",
+    "pino": "^9.x",
+    "dotenv": "^16.x",
+    "zod": "^3.x",
+    "jsonwebtoken": "^9.x"
+  },
+  "devDependencies": {
+    "nodemon": "^3.x",
+    "jest": "^29.x",
+    "eslint": "^9.x",
+    "supertest": "^7.x"
+  }
+}

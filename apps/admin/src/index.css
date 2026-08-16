@@ -1,0 +1,53 @@
+/* WBA Admin / Superadmin — Saudi flag white + green */
+@import '@wba/dashboard-ui/styles/base.css';
+
+:root {
+  --flag-green: #006c35;
+  --flag-green-deep: #004d26;
+  --flag-green-bright: #0a8244;
+
+  --bg-0: #ffffff;
+  --bg-1: #f4faf6;
+  --bg-2: #ffffff;
+  --bg-3: #eaf5ee;
+  --bg-4: #d8ecdf;
+  --bg-5: #c5e0cf;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+
+  --border-1: #d4e8dc;
+  --border-2: #b7d8c4;
+  --border-3: #8fc4a3;
+
+  --text-0: #042210;
+  --text-1: #0c2f1a;
+  --text-2: #2d5a40;
+  --text-3: #4d7a60;
+  --text-4: #7aa38a;
+
+  --border-focus: #006c35;
+  --accent: #006c35;
+  --accent-hover: #0a8244;
+  --accent-muted: rgba(0, 108, 53, 0.10);
+  --accent-border: rgba(0, 108, 53, 0.28);
+  --accent-glow: rgba(0, 108, 53, 0.18);
+  --accent-2: #0a8244;
+  --accent-3: #1a9a52;
+  --gradient: linear-gradient(135deg, #004d26 0%, #006c35 50%, #0a8244 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(0, 108, 53, 0.07), rgba(10, 130, 68, 0.07));
+  --purple: #006c35;
+  --purple-muted: rgba(0, 108, 53, 0.10);
+  --shadow-glow: 0 0 20px var(--accent-glow), 0 0 60px rgba(0, 108, 53, 0.06);
+
+  --green: #006c35;
+  --green-muted: rgba(0, 108, 53, 0.10);
+  --blue: #006c35;
+  --blue-muted: rgba(0, 108, 53, 0.10);
+  --cyan: #0a8244;
+  --cyan-muted: rgba(10, 130, 68, 0.10);
+
+  --shadow-sm: 0 1px 2px rgba(0, 76, 38, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 76, 38, 0.10);
+  --shadow-lg: 0 12px 40px rgba(0, 76, 38, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 76, 38, 0.14);
+  --shadow-card: 0 1px 3px rgba(0, 76, 38, 0.06), 0 0 0 1px var(--border-1);
+}

@@ -1,0 +1,29 @@
+{
+  "name": "wba-platform",
+  "private": true,
+  "description": "AI Website Assistant Platform — monorepo",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,user,admin,website -c blue,green,magenta,cyan \"npm:dev:api\" \"npm:dev:user\" \"npm:dev:admin\" \"npm:dev:website\"",
+    "dev:admin": "npm run dev -w @wba/admin",
+    "dev:superadmin": "npm run dev -w @wba/admin",
+    "dev:user": "npm run dev -w @wba/user",
+    "dev:website": "npm run dev -w @wba/website",
+    "dev:widget": "npm run dev -w @wba/widget",
+    "dev:api": "npm run dev -w @wba/platform-api",
+    "docker:up": "docker compose up -d",
+    "docker:services": "docker compose --profile services up -d",
+    "docker:down": "docker compose down",
+    "db:migrate": "npm run db:migrate -w @wba/platform-api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

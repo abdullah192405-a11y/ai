@@ -1,0 +1,410 @@
+openapi: '3.1.0'
+info:
+  title: WBA Platform API
+  version: '1.0.0'
+  description: |
+    AI-powered Website Assistant Platform API.
+    
+    This API provides endpoints for:
+    - Authentication & API key management
+    - Tenant (website owner) management
+    - Knowledge base ingestion & management
+    - AI assistant queries
+    - Analytics & usage reporting
+    - Billing & subscription management
+  contact:
+    name: WBA Platform Team
+    email: api@wba-platform.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.wba-platform.com/v1
+    description: Production
+  - url: https://staging-api.wba-platform.com/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Local Development
+
+tags:
+  - name: Auth
+    description: Authentication & authorization
+  - name: Tenants
+    description: Tenant (website owner) management
+  - name: Websites
+    description: Website registration & verification
+  - name: API Keys
+    description: API key lifecycle management
+  - name: Knowledge Base
+    description: Document ingestion & knowledge management
+  - name: Assistant
+    description: AI assistant query endpoints
+  - name: Analytics
+    description: Usage analytics & reporting
+  - name: Billing
+    description: Subscription & billing management
+  - name: Admin
+    description: Platform admin operations
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+paths:
+  # ─── Auth ──────────────────────────────────────────
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new tenant account
+      operationId: registerTenant
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '409':
+          description: Email already registered
+        '422':
+          description: Validation error
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and receive JWT tokens
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  # ─── Assistant ─────────────────────────────────────
+  /assistant/query:
+    post:
+      tags: [Assistant]
+      summary: Send a question to the AI assistant
+      operationId: queryAssistant
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantQueryRequest'
+      responses:
+        '200':
+          description: Assistant response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantQueryResponse'
+        '402':
+          description: Quota exceeded
+        '429':
+          description: Rate limit exceeded
+
+  # ─── Knowledge Base ────────────────────────────────
+  /knowledge/documents:
+    post:
+      tags: [Knowledge Base]
+      summary: Upload a document for knowledge base training
+      operationId: uploadDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentUploadRequest'
+      responses:
+        '202':
+          description: Document accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponse'
+    get:
+      tags: [Knowledge Base]
+      summary: List all knowledge base documents
+      operationId: listDocuments
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processing, indexed, failed]
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Document list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentListResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    # ─── Auth Schemas ────────────────────────────────
+    RegisterRequest:
+      type: object
+      required: [email, password, org_name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        org_name:
+          type: string
+          minLength: 2
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            expires_in:
+              type: integer
+            token_type:
+              type: string
+              default: Bearer
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # ─── Assistant Schemas ───────────────────────────
+    AssistantQueryRequest:
+      type: object
+      required: [domain, page_url, question]
+      properties:
+        domain:
+          type: string
+          example: example.com
+        page_url:
+          type: string
+          format: uri
+          example: https://example.com/pricing
+        question:
+          type: string
+          maxLength: 2000
+          example: What's included in the Pro plan?
+        session_id:
+          type: string
+          format: uuid
+
+    AssistantQueryResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            answer:
+              type: string
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  url:
+                    type: string
+            actions:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [navigate, scroll_to, highlight]
+                  target:
+                    type: string
+                  label:
+                    type: string
+            session_id:
+              type: string
+              format: uuid
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # ─── Knowledge Base Schemas ──────────────────────
+    DocumentUploadRequest:
+      type: object
+      required: [source_type]
+      properties:
+        file:
+          type: string
+          format: binary
+        source_type:
+          type: string
+          enum: [file, url, faq, text]
+        source_url:
+          type: string
+          format: uri
+        title:
+          type: string
+        website_id:
+          type: string
+          format: uuid
+
+    DocumentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            status:
+              type: string
+            chunk_count:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    DocumentListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentResponse/properties/data'
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/ResponseMeta'
+            - type: object
+              properties:
+                total_count:
+                  type: integer
+                has_more:
+                  type: boolean
+                cursor:
+                  type: string
+
+    # ─── Common Schemas ──────────────────────────────
+    ResponseMeta:
+      type: object
+      properties:
+        request_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          default: v1
+
+    ErrorResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        request_id:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+              code:
+                type: string

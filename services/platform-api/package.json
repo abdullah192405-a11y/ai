@@ -1,0 +1,35 @@
+{
+  "name": "@wba/platform-api",
+  "version": "0.1.0",
+  "description": "WBA MVP backend — widget config, chat (Gemini), and tenant dashboard API",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed": "node seed.js",
+    "seed:site": "node seed-site.js",
+    "seed:supabase": "node seed-supabase.js",
+    "seed:platform-admin": "node seed-platform-admin.js",
+    "seed:tenant-user": "node seed-tenant-user.js",
+    "db:migrate": "node -e \"import('./src/db.js').then(async ({pool, ensureSchema}) => { await pool.query('SELECT 1'); await ensureSchema(); await pool.end(); console.log('[migrate] done'); })\"",
+    "setup:crawl": "playwright install chromium"
+  },
+  "dependencies": {
+    "@wba/plans": "*",
+    "@wba/widget-config": "*",
+    "@google/generative-ai": "^0.21.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.2.0",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.13.1",
+    "playwright": "^1.61.1"
+  }
+}

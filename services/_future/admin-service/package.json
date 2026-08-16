@@ -1,0 +1,31 @@
+{
+    "name": "@wba/admin-service",
+    "version": "1.0.0",
+    "description": "Admin Service — Platform admin operations, feature flags, model management",
+    "main": "src/index.js",
+    "scripts": {
+        "dev": "nodemon src/index.js",
+        "start": "node src/index.js",
+        "test": "jest --coverage",
+        "lint": "eslint src/",
+        "migrate": "knex migrate:latest"
+    },
+    "dependencies": {
+        "fastify": "^5.x",
+        "@fastify/cors": "^10.x",
+        "@fastify/helmet": "^13.x",
+        "knex": "^3.x",
+        "pg": "^8.x",
+        "ioredis": "^5.x",
+        "uuid": "^11.x",
+        "pino": "^9.x",
+        "dotenv": "^16.x",
+        "zod": "^3.x"
+    },
+    "devDependencies": {
+        "nodemon": "^3.x",
+        "jest": "^29.x",
+        "eslint": "^9.x",
+        "supertest": "^7.x"
+    }
+}

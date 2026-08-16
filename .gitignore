@@ -1,0 +1,65 @@
+# ═══════════════════════════════════════════════════════════
+# WBA Platform — Root .gitignore
+# ═══════════════════════════════════════════════════════════
+
+# ─── Dependencies ─────────────────────────────────────────
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# ─── Environment Variables ────────────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ─── Build Output ─────────────────────────────────────────
+dist/
+build/
+*.js.map
+
+# ─── IDE ──────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ─── Docker ───────────────────────────────────────────────
+docker-compose.override.yml
+
+# ─── Terraform ────────────────────────────────────────────
+infrastructure/terraform/**/.terraform/
+infrastructure/terraform/**/*.tfstate
+infrastructure/terraform/**/*.tfstate.backup
+infrastructure/terraform/**/*.tfplan
+infrastructure/terraform/**/.terraform.lock.hcl
+
+# ─── Logs & Coverage ─────────────────────────────────────
+*.log
+logs/
+coverage/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Secrets ──────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+
+# ─── Crawler / Playwright ─────────────────────────────────
+services/platform-api/.playwright-browsers/
+services/platform-api/uploads/
+
+# ─── OS ───────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
