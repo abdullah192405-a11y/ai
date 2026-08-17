@@ -8,8 +8,6 @@ export function dashboardResolveAliases(dirname) {
     { find: '@wba/dashboard-ui', replacement: path.join(dashboardUi, 'src') },
     { find: '@wba/plans', replacement: path.resolve(dirname, '../../packages/plans') },
     { find: '@wba/widget-config', replacement: path.resolve(dirname, '../../packages/widget-config') },
-    { find: 'react', replacement: path.resolve(dirname, 'node_modules/react') },
-    { find: 'react-dom', replacement: path.resolve(dirname, 'node_modules/react-dom') },
   ];
 }
 
@@ -19,7 +17,5 @@ export function websiteResolveAliases(dirname) {
     { find: '@wba/dashboard-ui', replacement: path.resolve(dirname, '../../packages/dashboard-ui/src') },
     { find: '@wba/plans', replacement: path.resolve(dirname, '../../packages/plans') },
     { find: '@wba/widget-config', replacement: path.resolve(dirname, '../../packages/widget-config') },
-    { find: 'react', replacement: path.resolve(dirname, 'node_modules/react') },
-    { find: 'react-dom', replacement: path.resolve(dirname, 'node_modules/react-dom') },
   ];
 }
