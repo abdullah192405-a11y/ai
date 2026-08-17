@@ -1,6 +1,6 @@
 {
   "name": "@wba/platform-api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "WBA MVP backend — widget config, chat (Gemini), and tenant dashboard API",
   "type": "module",
   "main": "index.js",

@@ -26,6 +26,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// ─── Healthcheck (First route — zero overhead, no middleware delay) ─
+app.get('/health', (_req, res) => res.status(200).json({ ok: true, timestamp: new Date().toISOString() }));
+app.get('/ping', (_req, res) => res.status(200).send('pong'));
+app.get('/favicon.ico', (_req, res) => res.status(204).end());
+app.use('/.well-known', (_req, res) => res.status(404).end());
+
 // ─── Security Headers (helmet) ────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '1mb' }));
@@ -90,10 +96,6 @@ app.use('/v1/admin', restrictedCors);
 app.use('/v1/widget/chat', chatLimiter);
 app.use('/v1/auth', authLimiter);
 app.use('/v1', generalLimiter);
-
-app.get('/health', (_req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
-app.get('/favicon.ico', (_req, res) => res.status(204).end());
-app.use('/.well-known', (_req, res) => res.status(404).end());
 
 app.get('/', (_req, res) => {
   const base = env.publicBaseUrl;
