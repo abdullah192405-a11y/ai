@@ -26,6 +26,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// Railway (and most PaaS) sit behind a reverse proxy and forward the real
+// client IP via X-Forwarded-For. Without this, express-rate-limit can't
+// trust that header and logs an ERR_ERL_UNEXPECTED_X_FORWARDED_FOR warning
+// on every request, and IP-based limiting isn't accurate. `1` trusts only
+// the first hop (Railway's own proxy), which matches this deployment.
+app.set('trust proxy', 1);
+
 // ─── Healthcheck (First route — zero overhead, no middleware delay) ─
 app.get('/health', (_req, res) => res.status(200).json({ ok: true, timestamp: new Date().toISOString() }));
 app.get('/ping', (_req, res) => res.status(200).send('pong'));
