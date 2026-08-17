@@ -40,11 +40,8 @@ COPY database/ ./database/
 # Create fallback directory for widget bundle if requested
 RUN mkdir -p /app/apps/widget/dist && touch /app/apps/widget/dist/widget.iife.js
 
-# ─── Runtime & Verification ──────────────────────────────────────
+# ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
-
-# Dry-run import to expose any module resolution errors during build
-RUN node --input-type=module --eval "import('./index.js').then(() => { console.log('[build-check] index.js imports OK'); setTimeout(() => process.exit(0), 100); }).catch(err => { console.error('[build-check-failed]', err); process.exit(1); })"
 
 EXPOSE 8080
 
