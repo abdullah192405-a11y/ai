@@ -93,8 +93,19 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Widget endpoints (/v1/widget/*) are consumed cross-origin from arbitrary
+// customer sites and are protected by X-API-Key, not CORS — they use
+// openCors above. Everything else under /v1 is the dashboard API and stays
+// origin-restricted. Because Express runs every middleware whose path
+// prefix matches (not just the first), `/v1/widget/config` was also
+// hitting restrictedCors below it, which rejected the customer's origin by
+// throwing — an uncaught CORS error, not a clean 403, so it surfaced as a
+// 500. Skip restrictedCors entirely for widget paths to fix that.
 app.use('/v1/widget', openCors);
-app.use('/v1', restrictedCors);
+app.use('/v1', (req, res, next) => {
+  if (req.path.startsWith('/widget/')) return next();
+  restrictedCors(req, res, next);
+});
 app.use('/v1/admin', restrictedCors);
 
 app.use('/v1/widget/chat', chatLimiter);
@@ -145,8 +156,12 @@ app.use((_req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
-  console.error('[error]', err);
   if (res.headersSent) return;
+  if (typeof err?.message === 'string' && err.message.startsWith('CORS:')) {
+    console.warn('[cors]', err.message);
+    return res.status(403).json({ message: 'الطلب مرفوض — origin غير مسموح' });
+  }
+  console.error('[error]', err);
   res.status(500).json({ message: 'خطأ في الخادم' });
 });
 
