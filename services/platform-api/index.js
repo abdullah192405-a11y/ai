@@ -191,7 +191,7 @@ async function initAsync() {
 
 initAsync();
 
-// Prevent Gemini stream SDK bugs from crashing the whole server.
+// Global safety guards
 process.on('unhandledRejection', (reason) => {
   const msg = reason?.message || String(reason);
   if (msg.includes('GoogleGenerativeAI') || msg.includes('parse stream')) {
@@ -199,4 +199,8 @@ process.on('unhandledRejection', (reason) => {
     return;
   }
   console.error('[fatal] unhandledRejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] uncaughtException:', err?.message || err);
 });

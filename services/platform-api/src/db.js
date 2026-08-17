@@ -2,7 +2,20 @@ import pg from 'pg';
 import crypto from 'node:crypto';
 import { env } from './config.js';
 
-export const pool = new pg.Pool({ connectionString: env.databaseUrl });
+const isCloudDb =
+  env.databaseUrl.includes('neon.tech') ||
+  env.databaseUrl.includes('sslmode=require') ||
+  process.env.NODE_ENV === 'production';
+
+export const pool = new pg.Pool({
+  connectionString: env.databaseUrl,
+  ssl: isCloudDb ? { rejectUnauthorized: false } : false,
+});
+
+// Prevent unhandled error event from crashing Node on idle client drops
+pool.on('error', (err) => {
+  console.error('[db] pool error:', err.message || String(err));
+});
 
 export function query(text, params) {
   return pool.query(text, params);
