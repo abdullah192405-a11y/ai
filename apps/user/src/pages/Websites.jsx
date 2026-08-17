@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Globe, Plus, Loader2, CheckCircle2 } from 'lucide-react';
+import { Globe, Plus, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { api, auth } from '../api';
 import DomainVerifyCard from '../components/DomainVerifyCard';
 import LoadingState from '../components/LoadingState';
@@ -14,6 +14,8 @@ export default function Websites({ user }) {
   const [error, setError] = useState('');
   const [domain, setDomain] = useState('');
   const [changing, setChanging] = useState(false);
+  const [togglingWidget, setTogglingWidget] = useState(false);
+  const [widgetError, setWidgetError] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -55,6 +57,20 @@ export default function Websites({ user }) {
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const toggleWidget = async () => {
+    if (!site?.id) return;
+    setWidgetError('');
+    setTogglingWidget(true);
+    try {
+      const result = await api.setWebsiteWidget(site.id, !site.widgetEnabled);
+      setSite(result.website);
+    } catch (err) {
+      setWidgetError(err.message);
+    } finally {
+      setTogglingWidget(false);
     }
   };
 
@@ -108,6 +124,51 @@ export default function Websites({ user }) {
                 </div>
 
                 <DomainVerifyCard site={site} onUpdated={load} />
+
+                {owned && (
+                  <div className="widget-toggle-row" style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-1)' }}>
+                    <button
+                      type="button"
+                      className={`toggle-switch${site.widgetEnabled ? ' is-on' : ''}`}
+                      onClick={toggleWidget}
+                      disabled={togglingWidget}
+                      role="switch"
+                      aria-checked={site.widgetEnabled}
+                      aria-label="إظهار أو إخفاء المساعد على الموقع"
+                    >
+                      <span className="toggle-switch-knob" />
+                    </button>
+                    <div style={{ flex: 1 }}>
+                      <div className="widget-toggle-label">
+                        {site.widgetEnabled ? (
+                          <>
+                            <Eye size={14} style={{ verticalAlign: -2, marginInlineEnd: 4 }} />
+                            المساعد ظاهر على الموقع
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={14} style={{ verticalAlign: -2, marginInlineEnd: 4 }} />
+                            المساعد مخفي عن الموقع
+                          </>
+                        )}
+                      </div>
+                      <div className="widget-toggle-hint">
+                        {site.widgetEnabled
+                          ? 'الزوار يرون أيقونة المحادثة الآن. أطفئه لإخفائه فوراً دون حذف كود التضمين.'
+                          : 'كود التضمين موجود لكن الويدجت متوقف — لن يظهر للزوار حتى تفعّله من هنا.'}
+                      </div>
+                      {togglingWidget && (
+                        <div className="widget-toggle-hint">
+                          <Loader2 size={12} className="spin" style={{ verticalAlign: -2, marginInlineEnd: 4 }} />
+                          جاري الحفظ...
+                        </div>
+                      )}
+                      {widgetError && (
+                        <div style={{ fontSize: 12.5, color: '#f87171', marginTop: 4 }}>{widgetError}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {owned && (
                   <div style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
