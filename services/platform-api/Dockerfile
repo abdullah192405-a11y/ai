@@ -43,6 +43,6 @@ RUN mkdir -p /app/apps/widget/dist && touch /app/apps/widget/dist/widget.iife.js
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
 
-EXPOSE 8080
+EXPOSE 8080 80 3000
 
 CMD ["node", "index.js"]

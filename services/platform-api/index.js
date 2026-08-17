@@ -143,31 +143,26 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ message: 'خطأ في الخادم' });
 });
 
-// ─── Start HTTP Server on 0.0.0.0 (Dual Port Resilient) ───────────
-const primaryPort = parseInt(process.env.PORT || '8080', 10);
-const server = app.listen(primaryPort, '0.0.0.0', () => {
-  console.log(`[server] listening on 0.0.0.0:${primaryPort}`);
-  console.log(`[server] public base URL: ${env.publicBaseUrl}`);
-});
+// ─── Start HTTP Server on all standard ports (Multi-Port Resilient) ─
+const candidatePorts = [
+  ...new Set([
+    parseInt(process.env.PORT || '8080', 10),
+    8080,
+    80,
+    3000,
+  ]),
+].filter((p) => !isNaN(p) && p > 0);
 
-server.timeout = 600000;
-server.keepAliveTimeout = 620000;
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.warn(`[warn] port ${primaryPort} is already in use.`);
-  } else {
-    console.error('[server error]', err);
-  }
-});
-
-// Fallback: If primary port is not 8080, also bind 8080 so Docker EXPOSE / Railway proxy always connects
-if (primaryPort !== 8080) {
+for (const p of candidatePorts) {
   try {
-    const backupServer = app.listen(8080, '0.0.0.0', () => {
-      console.log('[server] also listening on 0.0.0.0:8080 (fallback)');
+    const s = app.listen(p, '0.0.0.0', () => {
+      console.log(`[server] listening on 0.0.0.0:${p}`);
     });
-    backupServer.on('error', () => {});
+    s.on('error', (err) => {
+      if (err.code !== 'EADDRINUSE' && err.code !== 'EACCES') {
+        console.warn(`[server] port ${p} warning:`, err.message);
+      }
+    });
   } catch {}
 }
 
