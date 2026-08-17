@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build -w @wba/user",
-  "outputDirectory": "apps/user/dist",
+  "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": null,
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
