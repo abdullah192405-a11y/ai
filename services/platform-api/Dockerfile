@@ -34,7 +34,7 @@ COPY packages/dashboard-ui/package.json ./packages/dashboard-ui/
 COPY packages/plans/package.json ./packages/plans/
 COPY packages/widget-config/package.json ./packages/widget-config/
 
-RUN npm ci --ignore-scripts
+RUN npm install --ignore-scripts
 
 # ─── Copy source ──────────────────────────────────────────────────
 COPY packages/ ./packages/
