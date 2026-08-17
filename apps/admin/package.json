@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite --port 5174",
-        "build": "vite build",
+        "build": "vite build && mkdir -p ../../dist && cp -r dist/* ../../dist/",
         "preview": "vite preview"
     },
     "dependencies": {
