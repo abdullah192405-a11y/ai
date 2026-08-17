@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: nabeeh-api
+    runtime: docker
+    dockerfilePath: ./services/platform-api/Dockerfile
+    dockerContext: .
+    plan: starter          # free tier — upgrade when you have paying customers
+    region: oregon         # change to frankfurt for closer to Saudi Arabia
+
+    # Health check — Render will restart the service if this fails
+    healthCheckPath: /health
+
+    # Auto-deploy on every push to main branch
+    autoDeploy: true
+    branch: main
+
+    # Environment variables — set these in Render Dashboard
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        sync: false          # you paste this from Neon.tech
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a random secret automatically
+      - key: PUBLIC_BASE_URL
+        sync: false          # e.g. https://nabeeh-api.onrender.com
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: AI_PROVIDER
+        value: gemini
+      - key: DEFAULT_MODEL
+        value: gemini-2.5-flash-lite
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

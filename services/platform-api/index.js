@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { env } from './src/config.js';
@@ -10,19 +12,96 @@ import { widgetRouter } from './src/routes/widget.js';
 import { tenantRouter } from './src/routes/tenant/index.js';
 import { platformAdminRouter } from './src/routes/platformAdmin.js';
 
+// ─── Production Safety Guard ──────────────────────────────────────
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change-me-in-production') {
+    console.error('[FATAL] JWT_SECRET must be set to a strong random value in production!');
+    process.exit(1);
+  }
+  if (!process.env.DATABASE_URL) {
+    console.error('[FATAL] DATABASE_URL must be set in production!');
+    process.exit(1);
+  }
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// ─── Security Headers (helmet) ────────────────────────────────────
+// Skip contentSecurityPolicy for now — widget embed needs flexibility
+app.use(helmet({ contentSecurityPolicy: false }));
+
 app.use(express.json({ limit: '1mb' }));
 
-// Permissive CORS: the widget + loader run on arbitrary customer origins.
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-  })
-);
+// ─── CORS ─────────────────────────────────────────────────────────
+// Widget & embed routes: open to all (they run on customer sites)
+const openCors = cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+});
+
+// Dashboard / Admin routes: restricted to known frontend origins
+const dashboardOrigins = [
+  /\.vercel\.app$/,                         // any Vercel preview URL
+  process.env.USER_DASHBOARD_URL,           // e.g. https://dashboard.nabeeh.ai
+  process.env.ADMIN_DASHBOARD_URL,          // e.g. https://admin.nabeeh.ai
+  'http://localhost:5173',                  // local user dev
+  'http://localhost:5174',                  // local admin dev
+  'http://localhost:5180',                  // local website dev
+].filter(Boolean);
+
+const restrictedCors = cors({
+  origin: (origin, cb) => {
+    // Allow server-to-server calls (no origin) and known frontends
+    if (!origin) return cb(null, true);
+    const ok = dashboardOrigins.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    cb(ok ? null : new Error(`CORS: origin not allowed — ${origin}`), ok);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  credentials: true,
+});
+
+// ─── Rate Limiting ────────────────────────────────────────────────
+// Widget chat: 30 req/min per IP (prevents AI cost drain)
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please slow down.' },
+});
+
+// Auth endpoints: 10 attempts/min per IP (brute-force protection)
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts.' },
+});
+
+// General API: 200 req/min per IP
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply CORS per route group
+app.use('/v1/widget', openCors);
+app.use('/v1', restrictedCors);
+app.use('/v1/admin', restrictedCors);
+
+// Apply rate limiters
+app.use('/v1/widget/chat', chatLimiter);
+app.use('/v1/auth', authLimiter);
+app.use('/v1', generalLimiter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
