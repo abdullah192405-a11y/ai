@@ -101,17 +101,28 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Widget endpoints (/v1/widget/*) are consumed cross-origin from arbitrary
-// customer sites and are protected by X-API-Key, not CORS — they use
-// openCors above. Everything else under /v1 is the dashboard API and stays
-// origin-restricted. Because Express runs every middleware whose path
-// prefix matches (not just the first), `/v1/widget/config` was also
-// hitting restrictedCors below it, which rejected the customer's origin by
-// throwing — an uncaught CORS error, not a clean 403, so it surfaced as a
-// 500. Skip restrictedCors entirely for widget paths to fix that.
-app.use('/v1/widget', openCors);
+// Endpoints the embedded widget calls from arbitrary customer sites. These are
+// protected by X-API-Key + the registered-domain check in apiKeyAuth, not by
+// CORS, so they get openCors. Everything else under /v1 is the dashboard API
+// and stays origin-restricted.
+//
+// Both prefixes matter: the widget fetches its config from /v1/widget/config
+// but chats via /v1/assistant/query and /v1/assistant/feedback. Exempting only
+// /widget/ left the chat calls hitting restrictedCors, which rejected the
+// customer's origin with a 403 and no Access-Control-Allow-Origin header — the
+// widget rendered and loaded its config, then every question failed in the
+// browser with "TypeError: Failed to fetch".
+//
+// Express runs every middleware whose path prefix matches (not just the
+// first), so restrictedCors must be skipped explicitly, not merely ordered
+// after openCors.
+const isWidgetPublicPath = (p) => p.startsWith('/widget/') || p.startsWith('/assistant/');
+
+app.use('/v1', (req, res, next) =>
+  isWidgetPublicPath(req.path) ? openCors(req, res, next) : next()
+);
 app.use('/v1', (req, res, next) => {
-  if (req.path.startsWith('/widget/')) return next();
+  if (isWidgetPublicPath(req.path)) return next();
   restrictedCors(req, res, next);
 });
 app.use('/v1/admin', restrictedCors);
