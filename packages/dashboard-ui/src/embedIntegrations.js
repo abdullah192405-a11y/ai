@@ -92,6 +92,15 @@ export const EMBED_PLATFORMS = [
     aliases: ['نكست', 'next', 'nextjs'],
   },
   {
+    id: 'vite',
+    label: 'Vite',
+    emoji: '⚡',
+    group: 'framework',
+    blurb: 'للمطوّرين',
+    difficulty: 'dev',
+    aliases: ['فايت', 'vite', 'vitejs'],
+  },
+  {
     id: 'vue',
     label: 'Vue.js',
     emoji: '🔷',
@@ -549,6 +558,38 @@ export default function RootLayout({ children }) {
     </html>
   );
 }`,
+      });
+
+    case 'vite':
+      return pack(meta, {
+        summary: 'أضف السكربت في index.html بجذر المشروع — تعمل مع Vite بغضّ النظر عن الإطار المستخدم (React أو Vue أو عادي).',
+        audience: 'لمطوّر الواجهة — Vite يستخدم index.html في جذر المشروع وليس داخل public/.',
+        time: 'حوالي دقيقتين',
+        codeLabel: 'كود Vite — في index.html',
+        codeNote: 'ملف index.html في مشاريع Vite موجود في جذر المشروع مباشرة (بجانب package.json)، وليس داخل مجلد public.',
+        steps: [
+          {
+            title: 'افتح index.html في جذر المشروع',
+            detail: 'الملف موجود بجانب vite.config.js وpackage.json مباشرة — ليس داخل src/ أو public/.',
+          },
+          {
+            title: 'الصق السكربت قبل </body>',
+            detail: 'انزل إلى نهاية الملف، قبل وسم </body> الصق الكود أدناه. لا حاجة لإعادة بناء المشروع في وضع التطوير — يعمل فوراً مع npm run dev.',
+          },
+          {
+            title: 'انشر المشروع',
+            detail: 'عند التنفيذ للإنتاج (npm run build) يبقى الكود ضمن dist/index.html تلقائياً.',
+          },
+        ],
+        after: afterCommon,
+        troubleshooting: [
+          {
+            q: 'لا أجد index.html في src أو public',
+            a: 'في مشاريع Vite الملف بجذر المشروع نفسه (خارج src/)، بجانب vite.config.js. إذا كان مشروعك يستخدم إطاراً كـ React أو Vue فوق Vite، نفس الملف صالح.',
+          },
+        ],
+        code: `<!-- index.html بجذر مشروع Vite — قبل </body> -->
+${script}`,
       });
 
     case 'vue':

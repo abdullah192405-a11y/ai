@@ -10,6 +10,9 @@ export function createApiClient({
   authEventName,
   defaultTimeoutMs = 30000,
 } = {}) {
+  // Strip trailing slash(es) so `${baseUrl}${path}` never produces a double
+  // slash — a leading double slash breaks CORS preflight (404 on OPTIONS).
+  baseUrl = baseUrl.replace(/\/+$/, '');
   const auth = {
     get token() {
       return localStorage.getItem(tokenKey) || '';
