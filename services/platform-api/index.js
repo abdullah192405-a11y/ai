@@ -33,7 +33,11 @@ app.get('/favicon.ico', (_req, res) => res.status(204).end());
 app.use('/.well-known', (_req, res) => res.status(404).end());
 
 // ─── Security Headers (helmet) ────────────────────────────────────
-app.use(helmet({ contentSecurityPolicy: false }));
+// crossOriginResourcePolicy defaults to 'same-origin' in helmet, which blocks
+// <script src="…/embed.js"> and widget.iife.js from loading on customer sites
+// (ERR_BLOCKED_BY_RESPONSE.NotSameOrigin) even with CORS headers set. These
+// assets are meant to be embedded cross-origin, so relax it to 'cross-origin'.
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(express.json({ limit: '1mb' }));
 
 // ─── CORS ─────────────────────────────────────────────────────────
@@ -117,7 +121,10 @@ app.use('/v1', widgetRouter);
 app.use('/v1', tenantRouter);
 app.use('/v1/admin', platformAdminRouter);
 
-const staticHeaders = (res) => res.setHeader('Access-Control-Allow-Origin', '*');
+const staticHeaders = (res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+};
 
 app.use(
   '/',
