@@ -38,18 +38,21 @@ COPY services/platform-api/ ./services/platform-api/
 COPY database/ ./database/
 
 # ─── Build the embeddable widget bundle ──────────────────────────
-# The committed services/platform-api/public/widget.iife.js (copied above) is
-# only a fallback; this rebuild is what normally ships. The trailing stamp lets
-# `curl .../widget.iife.js | tail -1` show which of the two is being served.
+# This is the only source of the served widget.iife.js — it is deliberately not
+# committed, so the image can never serve a stale bundle. No `|| true` here: if
+# the build breaks, the image build must fail loudly and visibly in Railway's
+# build logs. A failed build does not cause downtime — Railway keeps the
+# previous deployment serving.
+#
+# The trailing stamp records provenance; `curl .../widget.iife.js | tail -1`
+# shows which build produced what is live.
 COPY apps/widget/vite.config.js ./apps/widget/
 COPY apps/widget/src/ ./apps/widget/src/
-RUN { npm run build -w @wba/widget \
-      && cp apps/widget/dist/widget.iife.js services/platform-api/public/widget.iife.js \
-      && printf '\n/* wba:build=docker %s */\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-         >> services/platform-api/public/widget.iife.js \
-      && echo "WIDGET BUILD OK"; } > /app/services/platform-api/widget-build.log 2>&1; \
-    echo "exit=$?" >> /app/services/platform-api/widget-build.log; \
-    tail -40 /app/services/platform-api/widget-build.log
+RUN npm run build -w @wba/widget \
+    && cp apps/widget/dist/widget.iife.js services/platform-api/public/widget.iife.js \
+    && printf '\n/* wba:build=docker %s */\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+       >> services/platform-api/public/widget.iife.js \
+    && test -s services/platform-api/public/widget.iife.js
 
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api

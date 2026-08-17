@@ -63,3 +63,6 @@ services/platform-api/uploads/
 # ─── OS ───────────────────────────────────────────────────
 Thumbs.db
 .DS_Store
+
+# Built widget bundle — produced by `npm run build:widget` / the Docker build
+services/platform-api/public/widget.iife.js

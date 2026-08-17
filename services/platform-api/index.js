@@ -164,28 +164,21 @@ app.use(
   })
 );
 
-// TEMPORARY diagnostic: surfaces the in-image widget build log so the Docker
-// build failure can be read without Railway dashboard access. Remove once the
-// widget build succeeds in the image.
-app.get('/widget-build.log', (_req, res) => {
-  const logPath = path.join(__dirname, 'widget-build.log');
-  res.type('text/plain');
-  res.send(fs.existsSync(logPath) ? fs.readFileSync(logPath, 'utf8') : 'no widget-build.log in image');
-});
-
 app.get('/widget.iife.js', (_req, res) => {
   staticHeaders(res);
   res.type('application/javascript');
 
+  // In the image the bundle sits in public/ and is served by express.static
+  // above; this fallback is for local dev, where it is only in the build dir.
   const bundlePath = path.join(__dirname, '..', '..', 'apps', 'widget', 'dist', 'widget.iife.js');
 
-  // An empty bundle means the build step never ran — serve a loud error instead
-  // of 0 bytes, which fails silently on the customer's page.
+  // A missing or empty bundle means the build never ran — serve a loud error
+  // instead of 0 bytes, which fails silently on the customer's page.
   if (!fs.existsSync(bundlePath) || fs.statSync(bundlePath).size === 0) {
-    console.error('[widget] bundle missing or empty at', bundlePath);
+    console.error('[widget] bundle missing or empty at', bundlePath, '— run `npm run build:widget`');
     return res
       .status(500)
-      .send('console.error("[WBA] widget bundle unavailable on the server — build step did not run");');
+      .send('console.error("[WBA] widget bundle not built on the server — run npm run build:widget");');
   }
 
   res.sendFile(bundlePath);
