@@ -37,15 +37,17 @@ RUN npm install --ignore-scripts
 COPY services/platform-api/ ./services/platform-api/
 COPY database/ ./database/
 
-# ─── Refresh the embeddable widget bundle ────────────────────────
-# services/platform-api/public/widget.iife.js is committed and already copied
-# above, so the widget ships even if this rebuild fails. Regenerate it locally
-# with `npm run build:widget` whenever apps/widget/src changes.
+# ─── Build the embeddable widget bundle ──────────────────────────
+# The committed services/platform-api/public/widget.iife.js (copied above) is
+# only a fallback; this rebuild is what normally ships. The trailing stamp lets
+# `curl .../widget.iife.js | tail -1` show which of the two is being served.
 COPY apps/widget/vite.config.js ./apps/widget/
 COPY apps/widget/src/ ./apps/widget/src/
 RUN npm run build -w @wba/widget \
     && cp apps/widget/dist/widget.iife.js services/platform-api/public/widget.iife.js \
-    || echo "[build] widget rebuild failed — serving committed public/widget.iife.js"
+    && printf '\n/* wba:build=docker %s */\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+       >> services/platform-api/public/widget.iife.js \
+    || echo "[build] widget rebuild FAILED — falling back to committed public/widget.iife.js"
 
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
