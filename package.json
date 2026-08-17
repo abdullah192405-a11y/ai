@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "node services/platform-api/index.js",
     "dev": "concurrently -n api,user,admin,website -c blue,green,magenta,cyan \"npm:dev:api\" \"npm:dev:user\" \"npm:dev:admin\" \"npm:dev:website\"",
     "dev:admin": "npm run dev -w @wba/admin",
     "dev:superadmin": "npm run dev -w @wba/admin",
