@@ -164,6 +164,15 @@ app.use(
   })
 );
 
+// TEMPORARY diagnostic: surfaces the in-image widget build log so the Docker
+// build failure can be read without Railway dashboard access. Remove once the
+// widget build succeeds in the image.
+app.get('/widget-build.log', (_req, res) => {
+  const logPath = path.join(__dirname, 'widget-build.log');
+  res.type('text/plain');
+  res.send(fs.existsSync(logPath) ? fs.readFileSync(logPath, 'utf8') : 'no widget-build.log in image');
+});
+
 app.get('/widget.iife.js', (_req, res) => {
   staticHeaders(res);
   res.type('application/javascript');

@@ -43,11 +43,13 @@ COPY database/ ./database/
 # `curl .../widget.iife.js | tail -1` show which of the two is being served.
 COPY apps/widget/vite.config.js ./apps/widget/
 COPY apps/widget/src/ ./apps/widget/src/
-RUN npm run build -w @wba/widget \
-    && cp apps/widget/dist/widget.iife.js services/platform-api/public/widget.iife.js \
-    && printf '\n/* wba:build=docker %s */\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-       >> services/platform-api/public/widget.iife.js \
-    || echo "[build] widget rebuild FAILED — falling back to committed public/widget.iife.js"
+RUN { npm run build -w @wba/widget \
+      && cp apps/widget/dist/widget.iife.js services/platform-api/public/widget.iife.js \
+      && printf '\n/* wba:build=docker %s */\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+         >> services/platform-api/public/widget.iife.js \
+      && echo "WIDGET BUILD OK"; } > /app/services/platform-api/widget-build.log 2>&1; \
+    echo "exit=$?" >> /app/services/platform-api/widget-build.log; \
+    tail -40 /app/services/platform-api/widget-build.log
 
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
