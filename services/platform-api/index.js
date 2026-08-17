@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { env } from './src/config.js';
@@ -155,7 +156,19 @@ app.use(
 app.get('/widget.iife.js', (_req, res) => {
   staticHeaders(res);
   res.type('application/javascript');
-  res.sendFile(path.join(__dirname, '..', '..', 'apps', 'widget', 'dist', 'widget.iife.js'));
+
+  const bundlePath = path.join(__dirname, '..', '..', 'apps', 'widget', 'dist', 'widget.iife.js');
+
+  // An empty bundle means the build step never ran — serve a loud error instead
+  // of 0 bytes, which fails silently on the customer's page.
+  if (!fs.existsSync(bundlePath) || fs.statSync(bundlePath).size === 0) {
+    console.error('[widget] bundle missing or empty at', bundlePath);
+    return res
+      .status(500)
+      .send('console.error("[WBA] widget bundle unavailable on the server — build step did not run");');
+  }
+
+  res.sendFile(bundlePath);
 });
 
 app.use((_req, res) => {

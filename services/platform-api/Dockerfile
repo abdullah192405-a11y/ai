@@ -37,8 +37,12 @@ RUN npm install --ignore-scripts
 COPY services/platform-api/ ./services/platform-api/
 COPY database/ ./database/
 
-# Create fallback directory for widget bundle if requested
-RUN mkdir -p /app/apps/widget/dist && touch /app/apps/widget/dist/widget.iife.js
+# ─── Build the embeddable widget bundle ──────────────────────────
+# Served at /widget.iife.js and injected by public/embed.js on customer sites.
+COPY apps/widget/vite.config.js ./apps/widget/
+COPY apps/widget/src/ ./apps/widget/src/
+RUN npm run build -w @wba/widget \
+    && test -s /app/apps/widget/dist/widget.iife.js
 
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
