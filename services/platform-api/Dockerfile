@@ -22,24 +22,23 @@ ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /app
 
-# ─── Install dependencies ─────────────────────────────────────────
-# Copy only manifests first (better layer caching)
+# ─── Install dependencies & packages ──────────────────────────────
 COPY package.json package-lock.json ./
+COPY packages/ ./packages/
+COPY services/platform-api/package.json ./services/platform-api/
 COPY apps/user/package.json ./apps/user/
 COPY apps/admin/package.json ./apps/admin/
 COPY apps/website/package.json ./apps/website/
 COPY apps/widget/package.json ./apps/widget/
-COPY services/platform-api/package.json ./services/platform-api/
-COPY packages/dashboard-ui/package.json ./packages/dashboard-ui/
-COPY packages/plans/package.json ./packages/plans/
-COPY packages/widget-config/package.json ./packages/widget-config/
 
 RUN npm install --ignore-scripts
 
-# ─── Copy source ──────────────────────────────────────────────────
-COPY packages/ ./packages/
+# ─── Copy remaining backend source & schemas ─────────────────────
 COPY services/platform-api/ ./services/platform-api/
 COPY database/ ./database/
+
+# Create fallback directory for widget bundle if requested
+RUN mkdir -p /app/apps/widget/dist && touch /app/apps/widget/dist/widget.iife.js
 
 # ─── Runtime ──────────────────────────────────────────────────────
 WORKDIR /app/services/platform-api
