@@ -24,6 +24,10 @@
   "devDependencies": {
     "concurrently": "^9.2.1"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.34.8",
+    "@rollup/rollup-linux-x64-musl": "^4.34.8"
+  },
   "engines": {
     "node": ">=20"
   }
